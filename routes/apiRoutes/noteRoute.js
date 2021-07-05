@@ -1,9 +1,9 @@
 const fs = require('fs');
 const path = require('path');
-const { findById, createNewNote, validateNote } = require('./notesfx');
+const { createNewNotes, validateNotes, deleteNotes } = require('./noteProperties');
 const router = require('express').Router();
 //unique id to objects...
-var getUid = require('get-uid');
+let getUid = require('get-uid');
 
 //data to manipulate...
 const  notesArray  = require('../../db/db.json');
@@ -20,8 +20,7 @@ router.delete('/data/:id', (req, res) => {
   let id = req.params.id;
   let newArray = fs.readFileSync(path.join(__dirname, "../../db/db.json"));
   newArray = JSON.parse(newArray);
-  console.log(newArray);
-  let result = findById(id, newArray);
+  let result = deleteNotes(id, newArray);
   res.json(result);
 });
 
@@ -31,12 +30,12 @@ router.post('/data', (req, res) => {
   req.body.id = getUid();
   
   //error 400...
-  if (!validateNote(req.body)) {
+  if (!validateNotes(req.body)) {
     res.status(400).send('The note is not properly formatted.');
   } else {
     
     //add note to json file and notesArray...
-    const note = createNewNote(req.body, notesArray);
+    const note = createNewNotes(req.body, notesArray);
 
     res.json(note);
   }
